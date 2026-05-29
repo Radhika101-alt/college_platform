@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model College {
+  id         Int    @id @default(autoincrement())
+  name       String
+  location   String
+  fees       Int
+  rating     Float
+  overview   String
+  placements String
+  image      String
+
+  // Reverse relation: one college can be saved by many devices.
+  savedBy    SavedCollege[]
+
+  // Reverse relation: one college can be saved by many users.
+  savedByUsers UserSavedCollege[]
+}
+
+model SavedCollege {
+  id        Int      @id @default(autoincrement())
+
+  // We don't have authentication yet (NextAuth is Feature 8),
+  // so we track saved colleges per device using a cookie-based id.
+  deviceId  String
+
+  collegeId Int
+  college   College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([deviceId, collegeId])
+  @@index([deviceId])
+}
+
+model User {
+  id           Int    @id @default(autoincrement())
+  email        String @unique
+  name         String?
+  passwordHash String
+
+  createdAt    DateTime @default(now())
+
+  savedColleges UserSavedCollege[]
+}
+
+model UserSavedCollege {
+  id        Int      @id @default(autoincrement())
+
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  collegeId Int
+  college   College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, collegeId])
+  @@index([userId])
+}
