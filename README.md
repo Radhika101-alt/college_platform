@@ -45,6 +45,7 @@ This project uses Prisma (Postgres) and NextAuth (credentials).
 - `NEXTAUTH_SECRET`
 - `NEXTAUTH_URL` (set to your production URL, e.g. `https://your-app.vercel.app`)
 
+
 **Prisma in production**
 
 - Apply migrations during deploy: `npx prisma migrate deploy`
