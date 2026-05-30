@@ -2,6 +2,14 @@ import { prisma } from "@/lib/prisma"
 import type { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server"
 
+function parseOptionalNumber(raw: string | null): number | null {
+  if (!raw) return null;
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  const num = Number(trimmed);
+  return Number.isFinite(num) ? num : null;
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
@@ -20,10 +28,8 @@ export async function GET(request: Request) {
       ? Math.max(0, Math.floor(offsetNum))
       : 0;
 
-    const minFeesRaw = (searchParams.get("minFees") ?? "").trim();
-    const maxFeesRaw = (searchParams.get("maxFees") ?? "").trim();
-    const minFees = Number.isFinite(Number(minFeesRaw)) ? Number(minFeesRaw) : null;
-    const maxFees = Number.isFinite(Number(maxFeesRaw)) ? Number(maxFeesRaw) : null;
+    const minFees = parseOptionalNumber(searchParams.get("minFees"));
+    const maxFees = parseOptionalNumber(searchParams.get("maxFees"));
 
     // Build a Prisma `where` object in a safe, beginner-friendly way.
     // - If a filter is empty/invalid, we skip it.

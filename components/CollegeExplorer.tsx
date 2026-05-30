@@ -272,12 +272,8 @@ export default function CollegeExplorer() {
   return (
     <section className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-          College Discovery Platform
-        </h1>
-        <p className="text-sm text-gray-600">
-          Search colleges by name, location, or overview.
-        </p>
+        <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Explore colleges</h2>
+        <p className="text-sm text-gray-600">Search by name, location, or overview.</p>
       </div>
 
       {/* Search + Filters */}

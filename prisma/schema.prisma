@@ -8,60 +8,124 @@ datasource db {
 }
 
 model College {
-  id         Int    @id @default(autoincrement())
-  name       String
-  location   String
-  fees       Int
-  rating     Float
-  overview   String
-  placements String
-  image      String
-
-  // Reverse relation: one college can be saved by many devices.
-  savedBy    SavedCollege[]
-
-  // Reverse relation: one college can be saved by many users.
-  savedByUsers UserSavedCollege[]
+  id                Int                @id @default(autoincrement())
+  name              String
+  location          String
+  fees              Int
+  rating            Float
+  overview          String
+  placements        String
+  image             String
+  courses           Course[]
+  discussionThreads DiscussionThread[]
+  reviews           Review[]
+  savedBy           SavedCollege[]
+  savedByUsers      UserSavedCollege[]
 }
 
 model SavedCollege {
   id        Int      @id @default(autoincrement())
-
-  // We don't have authentication yet (NextAuth is Feature 8),
-  // so we track saved colleges per device using a cookie-based id.
   deviceId  String
-
   collegeId Int
-  college   College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
-
   createdAt DateTime @default(now())
+  college   College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
 
   @@unique([deviceId, collegeId])
   @@index([deviceId])
 }
 
 model User {
-  id           Int    @id @default(autoincrement())
-  email        String @unique
-  name         String?
-  passwordHash String
-
-  createdAt    DateTime @default(now())
-
-  savedColleges UserSavedCollege[]
+  id                Int                @id @default(autoincrement())
+  email             String             @unique
+  name              String?
+  passwordHash      String
+  createdAt         DateTime           @default(now())
+  discussionReplies DiscussionReply[]
+  discussionThreads DiscussionThread[]
+  reviews           Review[]
+  savedColleges     UserSavedCollege[]
 }
 
 model UserSavedCollege {
   id        Int      @id @default(autoincrement())
-
   userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   collegeId Int
-  college   College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
-
   createdAt DateTime @default(now())
+  college   College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, collegeId])
   @@index([userId])
+}
+
+model Course {
+  id        Int               @id @default(autoincrement())
+  collegeId Int
+  name      String
+  level     String
+  duration  String
+  totalFees Int
+  createdAt DateTime          @default(now())
+  cutoffs   AdmissionCutoff[]
+  college   College           @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+
+  @@index([collegeId])
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  collegeId Int
+  userId    Int
+  rating    Int
+  title     String
+  body      String
+  createdAt DateTime @default(now())
+  college   College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, collegeId])
+  @@index([collegeId])
+  @@index([userId])
+}
+
+model DiscussionThread {
+  id        Int               @id @default(autoincrement())
+  collegeId Int
+  userId    Int
+  title     String
+  body      String
+  createdAt DateTime          @default(now())
+  replies   DiscussionReply[]
+  college   College           @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([collegeId])
+  @@index([userId])
+}
+
+model DiscussionReply {
+  id        Int              @id @default(autoincrement())
+  threadId  Int
+  userId    Int
+  body      String
+  createdAt DateTime         @default(now())
+  thread    DiscussionThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([threadId])
+  @@index([userId])
+}
+
+model AdmissionCutoff {
+  id        Int      @id @default(autoincrement())
+  courseId  Int
+  exam      String
+  category  String
+  year      Int
+  minScore  Int
+  createdAt DateTime @default(now())
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, exam, category, year])
+  @@index([exam, category, year])
 }

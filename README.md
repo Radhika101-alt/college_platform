@@ -20,6 +20,26 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Product features
+
+- College explorer with pagination, compare, and saved colleges
+- Auth (NextAuth Credentials) with a protected profile dashboard
+- College detail tabs: Overview, Courses, Reviews, Discussions
+- Admission predictor (demo, DB-backed cutoffs)
+
+## Seeding (recommended)
+
+Run:
+
+```bash
+npm run seed
+```
+
+Demo users (password for both: `password123`):
+
+- `demo@collegeplatform.com`
+- `student2@collegeplatform.com`
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
@@ -44,7 +64,6 @@ This project uses Prisma (Postgres) and NextAuth (credentials).
 - `DATABASE_URL`
 - `NEXTAUTH_SECRET`
 - `NEXTAUTH_URL` (set to your production URL, e.g. `https://your-app.vercel.app`)
-
 
 **Prisma in production**
 
